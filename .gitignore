@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+.DS_Store
+tests/
+pyrightconfig.json
+CLAUDE.md
+docs/install.html
