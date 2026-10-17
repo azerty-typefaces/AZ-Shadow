@@ -4,4 +4,3 @@ __pycache__/
 tests/
 pyrightconfig.json
 CLAUDE.md
-docs/install.html
