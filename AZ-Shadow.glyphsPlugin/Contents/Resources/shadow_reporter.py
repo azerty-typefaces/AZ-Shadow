@@ -74,7 +74,7 @@ class AZShadow(ReporterPlugin):
             ghost = self._ghostFor(layer)
             if ghost is None:
                 return
-            path, dx, ref_width = ghost
+            path, dx, ref_width = ghost  # (ref_width: the reference's bounds width)
             fill, stroke = self._colors(strong)
             NSGraphicsContext.saveGraphicsState()
             try:
@@ -96,10 +96,11 @@ class AZShadow(ReporterPlugin):
 
     @objc.python_method
     def _drawWidthDiff(self, layer: Any, ref_width: float) -> None:
-        """The layer's advance width against the shadow's, in % (shadow_core.width_diff), centred on the advance width,
-        its top WIDTH_LABEL_GAP units under the layer's bounds: monospaced Medium, WIDTH_LABEL_SIZE pt on screen, in the
+        """The layer's bounds width against the shadow's, in % (shadow_core.width_diff; sidebearings left out), centred
+        on the bounds, its top WIDTH_LABEL_GAP units under them: monospaced Medium, WIDTH_LABEL_SIZE pt on screen, in the
         shadow's colour and opacity (drawn here, not with drawTextAtPoint: that one takes only the label font)."""
-        width = float(layer.width or 0)
+        bounds = layer.bounds
+        width = float(bounds.size.width)
         text = core.width_diff(width, ref_width)
         if text is None:
             return
@@ -111,8 +112,8 @@ class AZShadow(ReporterPlugin):
                                                                                              self.shadowPrefs.opacity),
         })
         size = label.size()
-        label.drawAtPoint_(NSPoint(width / 2.0 - size.width / 2.0,
-                                   layer.bounds.origin.y - core.WIDTH_LABEL_GAP - size.height))
+        label.drawAtPoint_(NSPoint(bounds.origin.x + width / 2.0 - size.width / 2.0,
+                                   bounds.origin.y - core.WIDTH_LABEL_GAP - size.height))
 
     @objc.python_method
     def _selectToolActive(self, layer: Any) -> bool:
@@ -130,7 +131,7 @@ class AZShadow(ReporterPlugin):
 
     @objc.python_method
     def _ghostFor(self, layer: Any) -> tuple[Any, float, float] | None:
-        """The reference glyph's outline for ``layer``, how far right to move it and its advance width, or None when
+        """The reference glyph's outline for ``layer``, how far right to move it and its bounds width, or None when
         ``layer`` gets no ghost (shadow_core.wanted; a reference glyph or layer the font lacks; a reference with no outline)."""
         glyph = layer.parent
         if glyph is None or glyph.parent is None:
@@ -152,7 +153,7 @@ class AZShadow(ReporterPlugin):
         dx = core.offset_x(prefs.alignment,
                            (target.origin.x, target.size.width, float(layer.width or 0)),
                            (ref.origin.x, ref.size.width, ref_advance))
-        return path, dx, ref_advance
+        return path, dx, float(ref.size.width)
 
     @objc.python_method
     def _outline(self, ref_layer: Any) -> Any:

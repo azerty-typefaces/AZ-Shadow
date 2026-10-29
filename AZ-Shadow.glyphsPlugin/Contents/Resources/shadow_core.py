@@ -22,7 +22,7 @@ STROKE_ALPHA = 0.30  # x opacity
 STRONG_FILL_ALPHA = 0.60  # x opacity
 STRONG_STROKE_ALPHA = 0.75  # x opacity
 # the width difference: under each shadowed layer, while width_diff is on (Hugo, 2026-10-15)
-WIDTH_LABEL_GAP = 100.0  # font units under the layer's bounds (the label's top; centred on the advance width)
+WIDTH_LABEL_GAP = 100.0  # font units under the layer's bounds (the label's top; centred on the bounds)
 WIDTH_LABEL_SIZE = 11.0  # pt on screen, at any zoom; monospaced, Medium
 # AZ Argus' keys from before the split (2026-10): read while Shadow's own are unset, never written
 ARGUS_KEYS = {
@@ -154,7 +154,7 @@ def offset_x(alignment: str, target: tuple[float, float, float], ref: tuple[floa
 
 
 def width_diff(width: float, ref_width: float) -> str | None:
-    """A layer's advance width against the shadow's: (width - ref_width) / ref_width in %, one decimal, signed with a
+    """A layer's bounds width against the shadow's: (width - ref_width) / ref_width in %, one decimal, signed with a
     true minus ("−19.4%", "+5.6%", "0.0%"); None for a zero-width reference."""
     if not ref_width:
         return None

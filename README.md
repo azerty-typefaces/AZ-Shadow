@@ -66,7 +66,7 @@ The reference glyph itself gets no shadow, and neither do empty glyphs. When the
 </p>
 
 
-You can display %width difference between glyphs and shadows.  
+You can display the width difference, in %, between each glyph's bounding box and the shadow's (sidebearings left out).  
 Turn it on in *Window ▸ Macro Panel*, then *Run*:
 
 ```python
