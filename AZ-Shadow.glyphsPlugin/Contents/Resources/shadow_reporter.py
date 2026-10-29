@@ -27,6 +27,7 @@ from GlyphsApp.plugins import ReporterPlugin
 
 PLUGIN_ID = "com.hugojourdan.AZShadow"
 SELECT_TOOL = "GlyphsToolSelect"  # the Select tool's class (its "Select All Layers" sibling starts the same)
+EXPLORER_TOOL = "AZDesignspaceExplorer"  # AZ Designspace Explorer's (a SelectTool: the edited layer's shadow is light)
 
 FOCUS = core.Focus(redraw=lambda: Glyphs.redraw())
 try:
@@ -115,13 +116,15 @@ class AZShadow(ReporterPlugin):
 
     @objc.python_method
     def _selectToolActive(self, layer: Any) -> bool:
-        """True while ``layer``'s window has the Select tool (the edited layer then gets the light shadow). Read from
-        the layer's own window, as GSFont.tool does, but never through Glyphs.font (a round-trip per frame)."""
+        """True while ``layer``'s window has the Select tool or AZ Designspace Explorer (a Select tool too: the edited
+        layer then gets the light shadow). Read from the layer's own window, as GSFont.tool does, but never through
+        Glyphs.font (a round-trip per frame)."""
         try:
             tool = layer.parent.parent.parent.windowController().toolEventDelegate()
             if tool.respondsToSelector_("currentTool"):  # (a GSToolGroup: its picked tool)
                 tool = tool.currentTool()
-            return str(tool.className()).startswith(SELECT_TOOL)
+            name = str(tool.className())
+            return name.startswith(SELECT_TOOL) or name == EXPLORER_TOOL
         except Exception:  # noqa: BLE001 (no window or tool: the light shadow, as before)
             return True
 
